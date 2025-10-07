@@ -170,6 +170,8 @@ def main():
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
     # スコアインスタンスの生成
     score = Score()    
+    # ビームのリスト
+    beams = []  
     clock = pg.time.Clock()
     tmr = 0
 
@@ -178,8 +180,8 @@ def main():
             if event.type == pg.QUIT:
                 return
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-                # スペースキー押下でBeamクラスのインスタンス生成
-                beam = Beam(bird)            
+                # スペースキー押下でBeamインスタンス生成しリストに追加
+                beams.append(Beam(bird))          
         
         screen.blit(bg_img, [0, 0])
         
@@ -201,6 +203,27 @@ def main():
         # 各オブジェクトの更新と描画
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
+
+        # ビームと爆弾の衝突判定（複数ビーム対応）
+        new_beams = []
+        for beam in beams:
+            hit = False
+            for i, bomb_obj in enumerate(bombs):
+                if bomb_obj is not None and beam is not None:
+                    if beam.rct.colliderect(bomb_obj.rct):
+                        bombs[i] = None
+                        hit = True
+                        score.score += 1
+                        score.update_img()
+                        bird.change_img(6, screen)
+            # 衝突しておらず、画面内にあるビームだけ保持
+            if not hit and check_bound(beam.rct) == (True, True):
+                new_beams.append(beam)
+        beams = new_beams
+        
+        # ビームの更新
+        for beam in beams:
+            beam.update(screen)        
         
         if bomb is not None:
             bomb.update(screen)
@@ -236,14 +259,15 @@ def main():
         for bomb in bombs:
             bomb.update(screen)        
 
-        if bomb is not None and bird.rct.colliderect(bomb.rct):
-            # ゲームオーバー画面の表示
-            font = pg.font.Font(None, 80)
-            txt = font.render("Game Over", True, (255, 0, 0))
-            screen.blit(txt, [WIDTH//2-150, HEIGHT//2])
-            pg.display.update()
-            time.sleep(2)
-            return     
+        for bomb in bombs:
+            if bomb is not None and bird.rct.colliderect(bomb.rct):
+                # ゲームオーバー画面の表示
+                font = pg.font.Font(None, 80)
+                txt = font.render("Game Over", True, (255, 0, 0))
+                screen.blit(txt, [WIDTH//2-150, HEIGHT//2])
+                pg.display.update()
+                time.sleep(2)
+                return     
 
         # ビームと爆弾の衝突判定
         for i, bomb_obj in enumerate(bombs):
