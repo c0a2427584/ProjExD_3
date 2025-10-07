@@ -192,6 +192,15 @@ def main():
                 bomb = None
                 beam = None
                 bird.change_img(6, screen)  # 喜び画像に変更
+
+        if bomb is not None and bird.rct.colliderect(bomb.rct):
+            # ゲームオーバー画面の表示
+            font = pg.font.Font(None, 80)
+            txt = font.render("Game Over", True, (255, 0, 0))
+            screen.blit(txt, [WIDTH//2-150, HEIGHT//2])
+            pg.display.update()
+            time.sleep(2)
+            return        
         
         pg.display.update()
         tmr += 1
