@@ -7,6 +7,7 @@ import pygame as pg
 
 WIDTH = 1100  # ゲームウィンドウの幅
 HEIGHT = 650  # ゲームウィンドウの高さ
+NUM_OF_BOMBS = 5  # 爆弾の数
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -147,6 +148,8 @@ def main():
     bird = Bird((300, 200))
     bomb = Bomb((255, 0, 0), 10)
     beam = None  # ゲーム初期化時にはビームは存在しない
+    # 複数の爆弾を生成
+    bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
     clock = pg.time.Clock()
     tmr = 0
 
@@ -192,6 +195,26 @@ def main():
                 bomb = None
                 beam = None
                 bird.change_img(6, screen)  # 喜び画像に変更
+
+        # 爆弾とビームの衝突判定
+        for i, bomb in enumerate(bombs):
+            if bomb is not None and beam is not None:
+                if beam.rct.colliderect(bomb.rct):
+                    bombs[i] = None
+                    beam = None
+        
+        # 爆弾とこうかとんの衝突判定
+        for bomb in bombs:
+            if bomb is not None and bird.rct.colliderect(bomb.rct):
+                # ゲームオーバー処理
+                return
+        
+        # Noneでない爆弾だけのリストに更新
+        bombs = [bomb for bomb in bombs if bomb is not None]
+        
+        # 爆弾の更新
+        for bomb in bombs:
+            bomb.update(screen)        
         
         pg.display.update()
         tmr += 1
