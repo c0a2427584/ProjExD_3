@@ -174,6 +174,23 @@ def main():
         tmr += 1
         clock.tick(50)
 
+        # ビームと爆弾の衝突判定
+        if bomb is not None and beam is not None:
+            if beam.rct.colliderect(bomb.rct):
+                # 衝突したら両方Noneにする
+                bomb = None
+                beam = None
+        
+        # こうかとんと爆弾の衝突判定（爆弾がNoneでないことを確認）
+        if bomb is not None and bird.rct.colliderect(bomb.rct):
+            bird.change_img(8, screen)
+            pg.display.update()
+            time.sleep(1)
+            return
+
+        if bomb is not None:
+            beam.update(screen)
+            
         if beam is not None:
             beam.update(screen)
 
