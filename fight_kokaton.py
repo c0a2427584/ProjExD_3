@@ -149,13 +149,14 @@ def main():
     beam = None  # ゲーム初期化時にはビームは存在しない
     clock = pg.time.Clock()
     tmr = 0
+
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return
-            # if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-            #     # スペースキー押下でBeamクラスのインスタンス生成
-            #     beam = Beam(bird)            
+            if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+                # スペースキー押下でBeamクラスのインスタンス生成
+                beam = Beam(bird)            
         screen.blit(bg_img, [0, 0])
         
         if bird.rct.colliderect(bomb.rct):
@@ -172,6 +173,9 @@ def main():
         pg.display.update()
         tmr += 1
         clock.tick(50)
+
+        if beam is not None:
+            beam.update(screen)
 
 
 if __name__ == "__main__":
