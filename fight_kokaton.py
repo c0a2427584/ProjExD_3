@@ -157,23 +157,10 @@ def main():
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 # スペースキー押下でBeamクラスのインスタンス生成
                 beam = Beam(bird)            
+        
         screen.blit(bg_img, [0, 0])
         
-        if bird.rct.colliderect(bomb.rct):
-            # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
-            bird.change_img(8, screen)
-            pg.display.update()
-            time.sleep(1)
-            return
-
-        key_lst = pg.key.get_pressed()
-        bird.update(key_lst, screen)
-        # beam.update(screen)   
-        bomb.update(screen)
-        pg.display.update()
-        tmr += 1
-        clock.tick(50)
-
+        # 衝突判定を先に行う
         # ビームと爆弾の衝突判定
         if bomb is not None and beam is not None:
             if beam.rct.colliderect(bomb.rct):
@@ -188,11 +175,19 @@ def main():
             time.sleep(1)
             return
 
+        # 各オブジェクトの更新と描画
+        key_lst = pg.key.get_pressed()
+        bird.update(key_lst, screen)
+        
         if bomb is not None:
-            beam.update(screen)
+            bomb.update(screen)
             
         if beam is not None:
             beam.update(screen)
+        
+        pg.display.update()
+        tmr += 1
+        clock.tick(50)
 
 
 if __name__ == "__main__":
