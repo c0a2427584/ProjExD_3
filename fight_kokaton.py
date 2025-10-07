@@ -281,7 +281,6 @@ def main():
 
         # スコアの描画
         score.update(screen)
-        
         pg.display.update()
         tmr += 1
         clock.tick(50)
