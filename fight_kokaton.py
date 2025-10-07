@@ -184,6 +184,14 @@ def main():
             
         if beam is not None:
             beam.update(screen)
+
+                # ビームと爆弾の衝突判定
+        if bomb is not None and beam is not None:
+            if beam.rct.colliderect(bomb.rct):
+                # 衝突したら両方Noneにし、こうかとんを喜ばせる
+                bomb = None
+                beam = None
+                bird.change_img(6, screen)  # 喜び画像に変更
         
         pg.display.update()
         tmr += 1
